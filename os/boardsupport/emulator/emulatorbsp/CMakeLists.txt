@@ -15,4 +15,7 @@ include(ecust.cmake)
 
 include(estart.cmake)
 
+include(econsnogui.cmake)
+
+
 

@@ -7,6 +7,11 @@
 #include <e32base.h>
 #include <f32file.h>
 
+#define TEST_SUSTAIN
+
+TTime startTime;
+
+
 
 TInt IdleCallBack(TAny* aParam)
 	{
@@ -14,16 +19,10 @@ TInt IdleCallBack(TAny* aParam)
 
 	count++;
 
-	if (count>5)
-		{
-		//Stop it there
-		CActiveScheduler::Stop();
-		return EFalse;
-		}
-
-	
+    //Only do this on first run
 	if (count==1)
 		{
+        startTime.HomeTime();
 		//Quick file system test
 		RFs fs;
 		User::LeaveIfError(fs.Connect());
@@ -48,11 +47,11 @@ TInt IdleCallBack(TAny* aParam)
 				//file.Close();
 				}
 
-			//Test write			
+			//Test write
 			TInt writeErr=file.Write(KWriteThat);
 			file.Close();
 			}
-		
+
 		//Test file creation
 		TInt createErr=file.Create(fs,KFileNameToCreate,EFileWrite);
 		if (!createErr)
@@ -66,9 +65,23 @@ TInt IdleCallBack(TAny* aParam)
 		CleanupStack::PopAndDestroy(1,&fs);
 		}
 
+    //Check our exit condition
+    TTime time;
+    time.HomeTime();
+    TTimeIntervalSeconds seconds;
+    User::LeaveIfError(time.SecondsFrom(startTime,seconds));
+
+    //Just run for a few seconds
+    if (seconds.Int()>5)
+    {
+        //Stop it there
+        CActiveScheduler::Stop();
+        return EFalse;
+    }
+
 
 	//Keep playing
-	return ETrue;		
+	return ETrue;
 	}
 
 
@@ -89,7 +102,7 @@ GLDEF_C void MainL()
 	CleanupStack::PushL(base);
 	CleanupStack::PopAndDestroy(2,other);
 	//delete base;
-	
+
 	//Testing cleanup stack
 	TRAPD(err,
 	base=new(ELeave) CBase();
@@ -121,14 +134,14 @@ GLDEF_C void MainL()
 
    //TODO:
    //RHashSet<TUint32> hash;
-	
+
    //Testing AOs
    //Install an active scheduler
    CActiveScheduler* activeScheduler = new(ELeave) CActiveScheduler;
    CActiveScheduler::Install(activeScheduler);
    CleanupStack::PushL(activeScheduler);
 
-   CIdle* idle = CIdle::NewL(CActive::EPriorityIdle);	
+   CIdle* idle = CIdle::NewL(CActive::EPriorityIdle);
    CleanupStack::PushL(idle);
 
    idle->Start(TCallBack(IdleCallBack,NULL));
@@ -150,7 +163,7 @@ GLDEF_C TInt E32Main()
 	{
 	//What do we do then
 	//SetReturnedHandle
-	
+
 	__UHEAP_MARK;
 
 	//CBase* base=new(ELeave) CBase();
@@ -177,11 +190,10 @@ GLDEF_C TInt E32Main()
 
 	TInt err=KErrNone;
 	TRAP(err,MainL());
-	
+
 	delete cleanupStack;
 
 	__UHEAP_MARKEND;
 
 	return err;
 	}
-

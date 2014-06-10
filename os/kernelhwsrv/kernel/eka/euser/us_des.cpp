@@ -360,15 +360,18 @@ void HandleFormatDirective(TParameterHandler& aParameterHandler, XFormatedText& 
 	const TInt KAlignTRealX = 4;
 	const TInt KAlignTInt64 = 4;
 #else
+ #ifndef __VC32__ // MSVC generates an internal compiler error with the following code
 	struct TReal_align {char c; TReal a;};
 	const TInt KAlignTReal = _FOFF(TReal_align,a);
- #ifndef __VC32__ // MSVC generates an internal compiler error with the following code
+
 	struct TRealX_align {char c; TRealX a;};
 	const TInt KAlignTRealX = _FOFF(TRealX_align,a);
 
 	struct TInt64_align {char c; TInt64 a;};
 	const TInt KAlignTInt64 = _FOFF(TInt64_align,a);
  #else
+	//SL: Now also hardcoding KAlignTReal
+	const TInt KAlignTReal = 4;
 	const TInt KAlignTRealX = 4;	// Hard code value for MSVC
 	const TInt KAlignTInt64 = 4;	// Hard code value for MSVC
  #endif

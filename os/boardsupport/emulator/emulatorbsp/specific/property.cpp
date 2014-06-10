@@ -28,6 +28,21 @@
 #define _DUMP_PROPERTY
 #endif
 
+
+//SL: added this to support relative paths
+#include <stdio.h>
+#ifdef WIN32
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#define FullPath _fullpath
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#define FullPath fullpath
+#endif
+
+
+
 const char* KDefaultMachineName = "epoc";
 const char* KDefaultTestMachineName = "defaulttest";
 
@@ -1164,6 +1179,7 @@ const char* Wins::EmulatorMediaPath()
 	return mpath;
 	}
 
+
 TInt Wins::SetupDrive(int aDrive, const char* aPath)
 //
 // set up emulated drives
@@ -1208,8 +1224,15 @@ TInt Wins::SetupDrive(int aDrive, const char* aPath)
 
         }
     else
-        // otherwise, aPath is fully qualified path name. Use that.
-        return iProperties.Replace(prop, aPath) ? KErrNone : KErrNoMemory;
+		{
+		//Otherwise aPath is potentially a relative path
+		char path[FILENAME_MAX+1];
+		//Resolve relative path
+		FullPath(path,aPath,sizeof(path)/sizeof(char));
+        //Now path is fully qualified path name. Use that.
+        return iProperties.Replace(prop, path) ? KErrNone : KErrNoMemory;
+		}
+
   
 	}
 

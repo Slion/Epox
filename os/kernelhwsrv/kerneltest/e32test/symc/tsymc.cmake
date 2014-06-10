@@ -18,7 +18,7 @@ push_target(tsymc)
 #-------------------------------------------------------------------
 add_cmake_source()
 #Make sure all the output from all projects will go in one place
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 #Visual Studio IDE folders
 source_group(Sources REGULAR_EXPRESSION ".+\\.cpp$")
 source_group(Includes REGULAR_EXPRESSION ".+\\.h$") 	
@@ -53,7 +53,7 @@ system_include(/epoc32/include/platform)
 #Copy test files
 install(	FILES 
 			${PROJECT_SOURCE_DIR}/os/kernelhwsrv/kerneltest/e32test/symc/tsymc.txt
-			DESTINATION ${CMAKE_BINARY_DIR}/\${BUILD_TYPE}/c/tsymc )
+			DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${BUILD_TYPE}/c/tsymc )
 #-------------------------------------------------------------------
 
 

@@ -25,7 +25,9 @@
 #define __EMULATOR_H__
 
 #include <e32def.h>
-#define WIN32_LEAN_AND_MEAN
+#ifndef WIN32_LEAN_AND_MEAN
+#	define WIN32_LEAN_AND_MEAN
+#endif
 #pragma warning( disable : 4201 ) // nonstandard extension used : nameless struct/union
 #include <windows.h>
 #pragma warning( default : 4201 ) // nonstandard extension used : nameless struct/union
