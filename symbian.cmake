@@ -11,7 +11,7 @@
 
 
 #Make sure all the output from all projects will go in one place
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 #------------------------------------------------------------------
 
 project (symbian)
@@ -25,6 +25,8 @@ add_definitions(-D__SYMC__)
 add_definitions(-D__LEAVE_EQUALS_THROW__)
 add_definitions(-D__SUPPORT_CPP_EXCEPTIONS__)
 add_definitions(-D__PLATSEC_UNLOCKED__)
+add_definitions(-DMONITOR_THREAD_CPU_TIME)
+add_definitions(-DSYMBIAN_FIX_TDESC_CONSTRUCTORS)
 # TODO: I guess public stuff should also define SYMBIAN_ENABLE_SPLIT_HEADERS 
 
 
@@ -68,14 +70,44 @@ add_subdirectory(./os/ossrv/lowlevellibsandfws/pluginfw/Group)
 add_subdirectory(./os/kernelhwsrv/kerneltest)
 #-------------------------------------------------------------
 
+#Copy epoc.ini to binary directory
+#Not used anymore we are using configure instead, see below
+#install(	FILES 
+#			${PROJECT_SOURCE_DIR}/symc/epoc.ini
+#			DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${BUILD_TYPE}/data )
+
+
+#If SYMC_DRIVE_C is not defined we default to parent folder
+if (NOT DEFINED SYMC_DRIVE_C)
+    set(SYMC_DRIVE_C_NOT_DEFINED ON)
+endif()
+
+
+###### Configure epoc.ini
+set(DEBUG_EPOC_INI "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/data/epoc.ini")
+set(RELEASE_EPOC_INI "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/data/epoc.ini")
+
+#Specify default C drive root for debug build
+if (DEFINED SYMC_DRIVE_C_NOT_DEFINED)
+    set(SYMC_DRIVE_C "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/c" )
+endif()
+
+#Configure epoc.ini for debug build
+configure_file( ${PROJECT_SOURCE_DIR}/symc/epoc.ini ${DEBUG_EPOC_INI})
+
+#Specify default C drive root for release build
+if (DEFINED SYMC_DRIVE_C_NOT_DEFINED)
+    set(SYMC_DRIVE_C "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/c" )
+endif()
+
+#Configure epoc.ini for release build
+configure_file( ${PROJECT_SOURCE_DIR}/symc/epoc.ini ${RELEASE_EPOC_INI})
+
 #Add a custom target just to group our cmake files together
 file(GLOB_RECURSE DotCMakeFiles	"./*.cmake")
-add_custom_target(symbian SOURCES ${source}	${DotCMakeFiles} ./symc/epoc.ini )					
+add_custom_target(symbian SOURCES ${source}	${DotCMakeFiles} ./symc/epoc.ini ${DEBUG_EPOC_INI} ${RELEASE_EPOC_INI})	
 source_group(CMake FILES ${DotCMakeFiles} ${CMAKE_CURRENT_LIST_FILE} )	
-source_group(Data FILES ./symc/epoc.ini)	
-
-#Copy epoc.ini to binary directory
-install(	FILES 
-			${PROJECT_SOURCE_DIR}/symc/epoc.ini
-			DESTINATION ${CMAKE_BINARY_DIR}/\${BUILD_TYPE}/data )
+source_group(Data FILES ./symc/epoc.ini)
+source_group(Data\\Debug FILES ${DEBUG_EPOC_INI})
+source_group(Data\\Release FILES ${RELEASE_EPOC_INI})
 			

@@ -29,15 +29,9 @@ inline TInt Invoke(TLinAddr aHandler,const TInt* aArgs)
 EXPORT_C TInt __fastcall Dispatch(TInt aFunction, TInt* aArgs)
 	{
 	NThread& me = *static_cast<NThread*>(TheScheduler.iCurrentThread);
-	//SL: Can't figure out why this fails at times
+	//SL: If you panic here its probably because you forgot to Emulator::Lock() when doing system calls.
+	//@see: http://www.developer.nokia.com/Community/Wiki/Symbian_OS_Internals/03._Threads,_Processes_and_Libraries#Forced_exit_-_diverting_threads
 	__NK_ASSERT_ALWAYS(!me.iDiverted);
-	
-	/*
-	if (me.iDiverted)
-		{
-		__KTRACE_OPT(KSCHED,DEBUGPRINT("WARNING: not diverted!"));
-		}
-	*/
 
 	EnterKernel();
 

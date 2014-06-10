@@ -126,15 +126,16 @@ endmacro(platform_export)
 #Use those include path macro instead of cmake built-in include_directories as it allows us to set include directories per target instead of per directory.
 macro(system_include path)
 	get_target(targetName)
-	get_target_property(value ${targetName} COMPILE_FLAGS)
-	#MS CL compiler specific. I guess gcc should use -I instead of /I
-	if (${value} STREQUAL "value-NOTFOUND")
-		set(value "/I ${PROJECT_SOURCE_DIR}${path}")		
-	else (${value} STREQUAL "value-NOTFOUND")
-		set(value "${value} /I ${PROJECT_SOURCE_DIR}${path}")		
-	endif (${value} STREQUAL "value-NOTFOUND")
+	#get_target_property(value ${targetName} COMPILE_FLAGS)
+	##MS CL compiler specific. I guess gcc should use -I instead of /I
+	#if (${value} STREQUAL "value-NOTFOUND")
+	#	set(value "/I ${PROJECT_SOURCE_DIR}${path}")		
+	#else (${value} STREQUAL "value-NOTFOUND")
+	#	set(value "${value} /I ${PROJECT_SOURCE_DIR}${path}")		
+	#endif (${value} STREQUAL "value-NOTFOUND")
 	#message("Add system include: ${value}")	
-	set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "${value}")	
+	#set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "${value}")
+	set_property(TARGET ${targetName} APPEND PROPERTY INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}${path})
 endmacro(system_include)
 
 #-----------------------------------------------------
@@ -143,14 +144,15 @@ endmacro(system_include)
 #TODO: Is this working with releative path?
 macro(user_include path)
 	get_target(targetName)
-	get_target_property(value ${targetName} COMPILE_FLAGS)
-	#MS CL compiler specific. I guess gcc should use -I instead of /I
-	if (${value} STREQUAL "value-NOTFOUND")
-		set(value "/I ${CMAKE_CURRENT_LIST_DIR}/${path}")	
-	else (${value} STREQUAL "value-NOTFOUND")
-		set(value "${value} /I ${CMAKE_CURRENT_LIST_DIR}/${path}")	
-	endif (${value} STREQUAL "value-NOTFOUND")	
-	set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "${value}")
+	#get_target_property(value ${targetName} COMPILE_FLAGS)
+	##MS CL compiler specific. I guess gcc should use -I instead of /I
+	#if (${value} STREQUAL "value-NOTFOUND")
+	#	set(value "/I ${CMAKE_CURRENT_LIST_DIR}/${path}")	
+	#else (${value} STREQUAL "value-NOTFOUND")
+	#	set(value "${value} /I ${CMAKE_CURRENT_LIST_DIR}/${path}")	
+	#endif (${value} STREQUAL "value-NOTFOUND")	
+	#set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "${value}")
+	set_property(TARGET ${targetName} APPEND PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_LIST_DIR}/${path})
 endmacro(user_include)
 
 

@@ -18,7 +18,7 @@ push_target(domainsrv)
 #-------------------------------------------------------------------
 add_cmake_source()
 #Make sure all the output from all projects will go in one place
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 #Visual Studio IDE folders
 source_group(Sources REGULAR_EXPRESSION ".+\\.cpp$")
 source_group(Includes REGULAR_EXPRESSION ".+\\.h$") 	

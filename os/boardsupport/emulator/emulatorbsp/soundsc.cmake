@@ -9,7 +9,7 @@
 # Stéphane Lenclud.
 #
 
-push_target(ecust)
+push_target(soundsc)
 
 #Add current file to our source tree
 add_cmake_source()

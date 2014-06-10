@@ -26,9 +26,20 @@
 #ifndef __NK_WIN32_H__
 #define __NK_WIN32_H__
 
+//SL: Avoid warnings
+#ifdef _CRTIMP
+#undef _CRTIMP
+#endif
+
 #define _CRTIMP			// we want to use the win32 static runtime library
 
 #define WIN32_LEAN_AND_MEAN
+
+//SL: Avoid warnings
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
+#endif
+
 #define _WIN32_WINNT 0x0400
 #include <windows.h>
 
