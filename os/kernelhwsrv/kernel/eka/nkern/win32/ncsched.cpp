@@ -856,15 +856,36 @@ TWin32FunctionInfo Win32FindExportedFunction(const char* aModuleName, const char
 
 	// Now have to check all other exports to find the end of the function
 	TUint end = 0xffffffff;
-	TInt i = 1;
+	TInt i = 0;
+	TInt consecutiveEmptyExport=0;
+	const TInt KMaxConsecutiveEmptyExport=100;
 	for (;;)
 		{
-		TUint addr = (TUint)GetProcAddress(library, MAKEINTRESOURCEA(i));
-		if (!addr)
+		++i; //SL: Original algorithm did skip 0 ordinal too
+		//SL: Check loop exit condition.
+		if (consecutiveEmptyExport>=KMaxConsecutiveEmptyExport)
+			{
 			break;
+			}
+
+		TUint addr = (TUint)GetProcAddress(library, MAKEINTRESOURCEA(i));
+		//SL: Apparently getting a NULL address does not mean you have reach the last of your ordinal export.
+		if (!addr)
+			{			
+			++consecutiveEmptyExport;
+			continue;
+			}
+		else
+			{
+			//SL: We have a valid export address reset our counter
+			consecutiveEmptyExport=0;
+			}
+
+		//SL: Check if that address is closer from our function address than our current end
 		if (addr > start && addr < end)
+			{
 			end = addr;
-		++i;
+			}	
 		}
 	__NK_ASSERT_ALWAYS(end != 0xffffffff);
 
